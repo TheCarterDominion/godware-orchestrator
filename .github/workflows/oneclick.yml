@@ -1,310 +1,79 @@
-name: One-Click Orchestrate & Deploy
+name: One-Click Scaffold + Publish (gh-pages)
 on:
   workflow_dispatch:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
-  scaffold:
+  build-publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Create tree
+      - name: Scaffold app
         run: |
-          mkdir -p .github/workflows
-          mkdir -p data
-
+          mkdir -p data .github/workflows
           cat > .nojekyll <<'EOF'
-          # Disable Jekyll so client assets serve as-is
+          # Disable Jekyll
           EOF
-
-          cat > README.md <<'EOF'
-          # Godware Orchestrator (Daily Decree + Soul OS Dashboard)
-          Client-only toolkit that:
-          - Loads your YouTube Feed Index (`data/watch-history.json`)
-          - Generates **Daily Decree Digest** (latest 10) → **Markdown + CSV** download
-          - Rebuilds **Soul OS Status Dashboard** → **Markdown + HTML** download
-          - Auto-deploys to **GitHub Pages** via Actions
-
-          ## Quick Start
-          1. Upload your **watch-history.json** into `/data/`.
-          2. Open the site → **Load Feed** → **Generate Digest / Build Dashboard** → Download files.
-
-          ## Live
-          Served by GitHub Pages from this branch via Actions.
-          EOF
-
-          cat > data/README.txt <<'EOF'
-          Place your YouTube takeout file here as:
-          watch-history.json
-          EOF
-
           cat > index.html <<'EOF'
-          <!doctype html>
-          <html lang="en">
-          <head>
-            <meta charset="utf-8"/>
-            <meta name="viewport" content="width=device-width,initial-scale=1"/>
-            <title>Godware Orchestrator — Daily Decree & Soul OS Dashboard</title>
-            <link rel="stylesheet" href="styles.css"/>
-          </head>
-          <body>
-          <div class="wrap">
-            <h1>Godware Orchestrator</h1>
-            <p class="sub">Daily Decree Digest & Soul OS Status Dashboard — GitHub Pages, client-side.</p>
-
-            <section class="card">
-              <h2>1) Load YouTube Feed Index</h2>
-              <p>Place your <code>watch-history.json</code> in <code>/data/</code>, then click “Load Feed”. (Or choose a file.)</p>
-              <div class="row">
-                <button id="btnLoad" class="btn">📥 Load Feed (from /data/watch-history.json)</button>
-                <input id="filePick" type="file" accept=".json" />
-              </div>
-              <div id="loadStatus" class="muted">Feed not loaded yet.</div>
-            </section>
-
-            <section class="card">
-              <h2>2) Daily Decree Digest (latest 10)</h2>
-              <div class="row">
-                <button id="btnDigest" class="btn" disabled>⚡ Generate Digest</button>
-                <a id="dlDigestMD" class="btn ghost" download="Daily_Decree_Digest.md" style="display:none">⬇️ Markdown</a>
-                <a id="dlDigestCSV" class="btn ghost" download="Daily_Decree_Digest.csv" style="display:none">⬇️ CSV</a>
-              </div>
-              <pre id="digestPreview" class="preview"></pre>
-            </section>
-
-            <section class="card">
-              <h2>3) Rebuild Soul OS Status Dashboard</h2>
-              <div class="row">
-                <button id="btnDashboard" class="btn" disabled>🛠️ Build Dashboard</button>
-                <a id="dlDashMD" class="btn ghost" download="Soul_OS_Status_Dashboard.md" style="display:none">⬇️ Markdown</a>
-                <a id="dlDashHTML" class="btn ghost" download="Soul_OS_Status_Dashboard.html" style="display:none">⬇️ HTML</a>
-              </div>
-              <pre id="dashboardPreview" class="preview"></pre>
-            </section>
-
-            <section class="card">
-              <h2>Tips</h2>
-              <ul>
-                <li>This is client-only. Upload <code>/data/watch-history.json</code> through GitHub web UI.</li>
-                <li>Click <b>Load Feed</b> → generate & download assets.</li>
-                <li>Everything runs in your browser; Pages only serves files.</li>
-              </ul>
-            </section>
-          </div>
-          <script src="app.js"></script>
-          </body>
-          </html>
+          <!doctype html><html lang="en"><head><meta charset="utf-8"/>
+          <meta name="viewport" content="width=device-width,initial-scale=1"/>
+          <title>Godware Orchestrator — Daily Decree & Dashboard</title>
+          <link rel="stylesheet" href="styles.css"/></head><body>
+          <div class="wrap"><h1>Godware Orchestrator</h1>
+          <p class="sub">Daily Decree Digest & Soul OS Status Dashboard — Pages client-only.</p>
+          <section class="card"><h2>Load YouTube Feed Index</h2>
+          <div class="row"><button id="btnLoad" class="btn">📥 Load Feed</button>
+          <input id="filePick" type="file" accept=".json"/></div>
+          <div id="loadStatus" class="muted">Feed not loaded yet.</div></section>
+          <section class="card"><h2>Daily Decree Digest</h2>
+          <div class="row"><button id="btnDigest" class="btn" disabled>⚡ Generate Digest</button>
+          <a id="dlDigestMD" class="btn ghost" download="Daily_Decree_Digest.md" style="display:none">⬇️ Markdown</a>
+          <a id="dlDigestCSV" class="btn ghost" download="Daily_Decree_Digest.csv" style="display:none">⬇️ CSV</a></div>
+          <pre id="digestPreview" class="preview"></pre></section>
+          <section class="card"><h2>Soul OS Status Dashboard</h2>
+          <div class="row"><button id="btnDashboard" class="btn" disabled>🛠️ Build Dashboard</button>
+          <a id="dlDashMD" class="btn ghost" download="Soul_OS_Status_Dashboard.md" style="display:none">⬇️ Markdown</a>
+          <a id="dlDashHTML" class="btn ghost" download="Soul_OS_Status_Dashboard.html" style="display:none">⬇️ HTML</a></div>
+          <pre id="dashboardPreview" class="preview"></pre></section></div>
+          <script src="app.js"></script></body></html>
           EOF
-
           cat > styles.css <<'EOF'
-          :root{ --bg:#0b0f14; --ink:#f7f3e7; --gold:#f5d27d; --panel:#12151c; }
+          :root{--bg:#0b0f14;--ink:#f7f3e7;--gold:#f5d27d;--panel:#12151c}
           *{box-sizing:border-box}
           html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto}
           .wrap{max-width:1100px;margin:0 auto;padding:18px 14px 120px}
           h1{color:var(--gold);margin:.2rem 0 .6rem}
-          h2{margin:.2rem 0 .6rem}
-          .sub{opacity:.85}
-          .card{border:1px solid rgba(245,210,125,.35);border-radius:14px;background:var(--panel);padding:12px 14px;margin:12px 0}
+          .sub{opacity:.85}.card{border:1px solid rgba(245,210,125,.35);border-radius:14px;background:var(--panel);padding:12px 14px;margin:12px 0}
           .btn{background:#171923;border:1px solid rgba(245,210,125,.45);color:inherit;border-radius:12px;padding:10px 12px;cursor:pointer;text-decoration:none}
-          .btn.ghost{background:transparent}
-          .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-          .muted{opacity:.8}
-          .preview{background:#0f1320;border:1px solid #384055;border-radius:12px;padding:10px;white-space:pre-wrap;max-height:420px;overflow:auto}
-          code{background:#0f1320;border:1px solid #384055;border-radius:6px;padding:2px 5px}
+          .btn.ghost{background:transparent}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+          .muted{opacity:.8}.preview{background:#0f1320;border:1px solid #384055;border-radius:12px;padding:10px;white-space:pre-wrap;max-height:420px;overflow:auto}
           EOF
-
           cat > app.js <<'EOF'
-          /* Godware Orchestrator — client-only */
-          const btnLoad = document.getElementById('btnLoad');
-          const filePick = document.getElementById('filePick');
-          const loadStatus = document.getElementById('loadStatus');
-
-          const btnDigest = document.getElementById('btnDigest');
-          const dlDigestMD = document.getElementById('dlDigestMD');
-          const dlDigestCSV = document.getElementById('dlDigestCSV');
-          const digestPreview = document.getElementById('digestPreview');
-
-          const btnDashboard = document.getElementById('btnDashboard');
-          const dlDashMD = document.getElementById('dlDashMD');
-          const dlDashHTML = document.getElementById('dlDashHTML');
-          const dashboardPreview = document.getElementById('dashboardPreview');
-
-          let FEED = [];
-
-          async function fetchFeedFromRepo() {
-            const url = 'data/watch-history.json';
-            const r = await fetch(url, {cache:'no-store'});
-            if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-            return await r.json();
-          }
-
-          function normalizeFeed(raw) {
-            const arr = Array.isArray(raw) ? raw : (Array.isArray(raw?.watchHistory) ? raw.watchHistory : []);
-            const out = [];
-            for (const item of arr) {
-              const title = item.title || '';
-              const url = item.titleUrl || '';
-              const time = item.time || '';
-              const channel = (item.subtitles && item.subtitles[0]?.name) || item.channelName || '';
-              const topics = (item.details && Array.isArray(item.details)) ? item.details.map(d => d.name).join(', ') : '';
-              out.push({title, url, time, channel, topics});
-            }
-            out.sort((a,b) => (b.time||'').localeCompare(a.time||''));
-            return out;
-          }
-
-          function enableActions(enabled){ btnDigest.disabled=!enabled; btnDashboard.disabled=!enabled; }
-
-          btnLoad.addEventListener('click', async () => {
-            loadStatus.textContent = 'Loading /data/watch-history.json...';
-            try {
-              const raw = await fetchFeedFromRepo();
-              FEED = normalizeFeed(raw);
-              loadStatus.textContent = `Loaded ${FEED.length} items.`;
-              enableActions(true);
-            } catch (e) {
-              loadStatus.textContent = e.message + ' — Or pick a file below.';
-            }
-          });
-
-          filePick.addEventListener('change', async (ev) => {
-            const f = ev.target.files?.[0]; if(!f) return;
-            try {
-              const txt = await f.text(); const raw = JSON.parse(txt);
-              FEED = normalizeFeed(raw);
-              loadStatus.textContent = `Loaded ${FEED.length} items (from file).`;
-              enableActions(true);
-            } catch (e) { loadStatus.textContent = 'Failed to parse JSON: '+e.message; }
-          });
-
-          function toCSV(rows){
-            const esc = v => `"${String(v||'').replace(/"/g,'""')}"`;
-            const header = ['Title','Link','Channel','Topics','Time'];
-            const body = rows.map(r => [r.title,r.url,r.channel,r.topics,r.time].map(esc).join(','));
-            return [header.join(','), ...body].join('\\n');
-          }
-          function toDigestMarkdown(rows){
-            const date = new Date().toISOString().slice(0,10);
-            let md = `# Daily Decree Digest — ${date}\\n\\n`;
-            rows.forEach((r,i)=>{
-              md += `**${i+1}. ${r.title}**  \\n`;
-              if (r.channel) md += `Channel: ${r.channel}  \\n`;
-              if (r.topics) md += `Topics: ${r.topics}  \\n`;
-              if (r.url) md += `[Open ▶](${r.url})  \\n`;
-              if (r.time) md += `Watched: ${r.time}\\n`;
-              md += `\\n---\\n\\n`;
-            });
-            md += `_Generated by Godware Orchestrator._\\n`;
-            return md;
-          }
-
-          btnDigest.addEventListener('click', () => {
-            if (!FEED.length) return;
-            const latest10 = FEED.slice(0,10);
-            const md = toDigestMarkdown(latest10);
-            const csv = toCSV(latest10);
-            digestPreview.textContent = md.slice(0, 2000) + (md.length>2000?' …':'');
-            const blobMD = new Blob([md], {type: 'text/markdown'});
-            const blobCSV = new Blob([csv], {type: 'text/csv'});
-            dlDigestMD.href = URL.createObjectURL(blobMD);
-            dlDigestCSV.href = URL.createObjectURL(blobCSV);
-            dlDigestMD.style.display = ''; dlDigestCSV.style.display = '';
-          });
-
-          function toDashboardMarkdown(all){
-            const date = new Date().toISOString().slice(0,10);
-            const buckets = {
-              Security: all.filter(x => /google|security|account/i.test(x.channel+x.title)),
-              Automation: all.filter(x => /task|update|automation|openai|chatgpt/i.test(x.channel+x.title)),
-              AI_Dev: all.filter(x => /ai|ml|kaggle|nvidia|replit|dev/i.test(x.channel+x.title)),
-              Creative: all.filter(x => /reallusion|cartoon|animation|music|sound|film/i.test(x.channel+x.title)),
-              Other: []
-            };
-            const used = new Set([ ...buckets.Security, ...buckets.Automation, ...buckets.AI_Dev, ...buckets.Creative ].map(x=>x.url||x.title));
-            buckets.Other = all.filter(x => !used.has(x.url||x.title));
-
-            let md = `# Soul OS Status Dashboard — ${date}\\n\\n`;
-            for (const [name, rows] of Object.entries(buckets)) {
-              md += `## ${name} (${rows.length})\\n`;
-              rows.slice(0,20).forEach(r=>{
-                md += `- **${r.title}** — ${r.channel || '—'}  `;
-                if (r.url) md += `[[link]](${r.url})  `;
-                if (r.time) md += `_${r.time}_`;
-                md += `\\n`;
-              });
-              md += `\\n`;
-            }
-            md += `_Auto-built by Godware Orchestrator._\\n`;
-            return md;
-          }
-          function toDashboardHTML(md){
-            const esc = s => s.replace(/[&<>]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]));
-            return `<!doctype html><html><head><meta charset="utf-8"/>
-            <meta name="viewport" content="width=device-width,initial-scale=1"/>
-            <title>Soul OS Status Dashboard</title>
-            <link rel="stylesheet" href="styles.css"/></head>
-            <body><div class="wrap"><h1>Soul OS Status Dashboard</h1><pre class="preview">${esc(md)}</pre></div></body></html>`;
-          }
-
-          btnDashboard.addEventListener('click', () => {
-            if (!FEED.length) return;
-            const md = toDashboardMarkdown(FEED.slice(0,120));
-            const html = toDashboardHTML(md);
-            dashboardPreview.textContent = md.slice(0, 2000) + (md.length>2000?' …':'');
-            const blobMD = new Blob([md], {type: 'text/markdown'});
-            const blobHTML = new Blob([html], {type: 'text/html'});
-            dlDashMD.href = URL.createObjectURL(blobMD);
-            dlDashHTML.href = URL.createObjectURL(blobHTML);
-            dlDashMD.style.display = ''; dlDashHTML.style.display = '';
-          });
+          const btnLoad=document.getElementById('btnLoad');const filePick=document.getElementById('filePick');const loadStatus=document.getElementById('loadStatus');
+          const btnDigest=document.getElementById('btnDigest');const dlDigestMD=document.getElementById('dlDigestMD');const dlDigestCSV=document.getElementById('dlDigestCSV');const digestPreview=document.getElementById('digestPreview');
+          const btnDashboard=document.getElementById('btnDashboard');const dlDashMD=document.getElementById('dlDashMD');const dlDashHTML=document.getElementById('dlDashHTML');const dashboardPreview=document.getElementById('dashboardPreview');
+          let FEED=[];
+          async function fetchFeedFromRepo(){const r=await fetch('data/watch-history.json',{cache:'no-store'});if(!r.ok)throw new Error(`${r.status} ${r.statusText}`);return await r.json();}
+          function normalizeFeed(raw){const arr=Array.isArray(raw)?raw:(Array.isArray(raw?.watchHistory)?raw.watchHistory:[]);const out=[];for(const item of arr){const title=item.title||'';const url=item.titleUrl||'';const time=item.time||'';const channel=(item.subtitles&&item.subtitles[0]?.name)||item.channelName||'';const topics=(item.details&&Array.isArray(item.details))?item.details.map(d=>d.name).join(', '):'';out.push({title,url,time,channel,topics});}out.sort((a,b)=>(b.time||'').localeCompare(a.time||''));return out;}
+          function enable(e){btnDigest.disabled=!e;btnDashboard.disabled=!e;}
+          btnLoad.addEventListener('click',async()=>{loadStatus.textContent='Loading /data/watch-history.json...';try{const raw=await fetchFeedFromRepo();FEED=normalizeFeed(raw);loadStatus.textContent=`Loaded ${FEED.length} items.`;enable(true);}catch(e){loadStatus.textContent=e.message+' — Or pick a file below.';}});
+          filePick.addEventListener('change',async(ev)=>{const f=ev.target.files?.[0];if(!f)return;try{const txt=await f.text();const raw=JSON.parse(txt);FEED=normalizeFeed(raw);loadStatus.textContent=`Loaded ${FEED.length} items (from file).`;enable(true);}catch(e){loadStatus.textContent='Failed to parse JSON: '+e.message;}});
+          function toCSV(rows){const esc=v=>`"${String(v||'').replace(/"/g,'""')}"`;const header=['Title','Link','Channel','Topics','Time'];const body=rows.map(r=>[r.title,r.url,r.channel,r.topics,r.time].map(esc).join(','));return[header.join(','),...body].join('\n');}
+          function toDigestMarkdown(rows){const date=new Date().toISOString().slice(0,10);let md=`# Daily Decree Digest — ${date}\n\n`;rows.forEach((r,i)=>{md+=`**${i+1}. ${r.title}**  \n`;if(r.channel)md+=`Channel: ${r.channel}  \n`;if(r.topics)md+=`Topics: ${r.topics}  \n`;if(r.url)md+=`[Open ▶](${r.url})  \n`;if(r.time)md+=`Watched: ${r.time}\n`;md+=`\n---\n\n`;});md+=`_Generated by Godware Orchestrator._\n`;return md;}
+          btnDigest.addEventListener('click',()=>{if(!FEED.length)return;const latest10=FEED.slice(0,10);const md=toDigestMarkdown(latest10);const csv=toCSV(latest10);digestPreview.textContent=md.slice(0,2000)+(md.length>2000?' …':'');const blobMD=new Blob([md],{type:'text/markdown'});const blobCSV=new Blob([csv],{type:'text/csv'});dlDigestMD.href=URL.createObjectURL(blobMD);dlDigestCSV.href=URL.createObjectURL(blobCSV);dlDigestMD.style.display='';dlDigestCSV.style.display='';});
+          function toDashMD(all){const date=new Date().toISOString().slice(0,10);const B={Security:all.filter(x=>/google|security|account/i.test(x.channel+x.title)),Automation:all.filter(x=>/task|update|automation|openai|chatgpt/i.test(x.channel+x.title)),AI_Dev:all.filter(x=>/ai|ml|kaggle|nvidia|replit|dev/i.test(x.channel+x.title)),Creative:all.filter(x=>/reallusion|cartoon|animation|music|sound|film/i.test(x.channel+x.title)),Other:[]};const used=new Set([...B.Security,...B.Automation,...B.AI_Dev,...B.Creative].map(x=>x.url||x.title));B.Other=all.filter(x=>!used.has(x.url||x.title));let md=`# Soul OS Status Dashboard — ${date}\n\n`;for(const[k,rows]of Object.entries(B)){md+=`## ${k} (${rows.length})\n`;rows.slice(0,20).forEach(r=>{md+=`- **${r.title}** — ${r.channel||'—'}  `;if(r.url)md+=`[[link]](${r.url})  `;if(r.time)md+=`_${r.time}_`;md+=`\n`;});md+=`\n`; }md+=`_Auto-built by Godware Orchestrator._\n`;return md;}
+          function toDashHTML(md){const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));return`<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Soul OS Status Dashboard</title><link rel="stylesheet" href="styles.css"/></head><body><div class="wrap"><h1>Soul OS Status Dashboard</h1><pre class="preview">${esc(md)}</pre></div></body></html>`;}
+          const dlDashMD=document.getElementById('dlDashMD');const dlDashHTML=document.getElementById('dlDashHTML');
+          btnDashboard.addEventListener('click',()=>{if(!FEED.length)return;const md=toDashMD(FEED.slice(0,120));const html=toDashHTML(md);dashboardPreview.textContent=md.slice(0,2000)+(md.length>2000?' …':'');const blobMD=new Blob([md],{type:'text/markdown'});const blobHTML=new Blob([html],{type:'text/html'});dlDashMD.href=URL.createObjectURL(blobMD);dlDashHTML.href=URL.createObjectURL(blobHTML);dlDashMD.style.display='';dlDashHTML.style.display='';});
           EOF
 
-          cat > .github/workflows/deploy.yml <<'EOF'
-          name: Deploy to GitHub Pages
-          on:
-            push:
-              branches: [ main ]
-            workflow_dispatch:
-          permissions:
-            contents: read
-            pages: write
-            id-token: write
-          jobs:
-            build:
-              runs-on: ubuntu-latest
-              steps:
-                - name: Checkout
-                  uses: actions/checkout@v4
-                - name: Upload Pages artifact
-                  uses: actions/upload-pages-artifact@v3
-                  with:
-                    path: .
-            deploy:
-              needs: build
-              runs-on: ubuntu-latest
-              environment:
-                name: github-pages
-                url: ${{ steps.deployment.outputs.page_url }}
-              steps:
-                - name: Deploy to GitHub Pages
-                  id: deployment
-                  uses: actions/deploy-pages@v4
-          EOF
-
-      - name: Commit scaffold
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "Scaffold Godware Orchestrator and deploy workflow"
-            git push
-          else
-            echo "No changes to commit."
-          fi
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
+          force_orphan: true
